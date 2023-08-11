@@ -10,7 +10,15 @@ const userRoutes = require('./routes/users');
 // create the express server
 const app = express();
 
-app.use(cors());
+// use cors to allow cross-origin requests
+
+app.use( "*" , cors({
+    origin: true,
+    credentials: true
+  }
+))
+
+
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 
