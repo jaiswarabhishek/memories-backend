@@ -69,21 +69,21 @@ exports.createPost = async(req, res) => {
 
 
    
-   const {title,message,creator,tags} = req.body;
+   const post = req.body;
  
    
-
-
+ 
+//  console.log(req.userId)
 
 
     try{
           const myCloud  = await cloudinary.uploader.upload(req.body.selectedFile,{folder:"memories"});
 
   
-    console.log(myCloud);
+          console.log(myCloud);
 
 
-        const newPost = new PostMessage({title,message, selectedFile:myCloud.secure_url,creator,tags});
+        const newPost = new PostMessage({...post,creator:req.userId,selectedFile:myCloud.secure_url});
         await newPost.save();
 
         res.status(201).json(newPost);
