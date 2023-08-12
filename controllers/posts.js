@@ -1,9 +1,12 @@
 const PostMessage = require('../models/postMessage.js');
 const mongoose = require('mongoose');
+const cloudinary = require('cloudinary').v2;
 
 exports.getPosts = async(req, res) => {
 
     const {page} = req.query;
+
+
   
   
 
@@ -29,7 +32,14 @@ exports.getPost = async(req, res) => {
     const {id} = req.params;
     try{
 
+
+
         const post = await PostMessage.findById(id);
+
+        // post not found with that id
+        if(!post) return res.status(404).json({message:'No post with that id'});
+
+
         res.status(200).json(post);
 
     }
@@ -56,13 +66,28 @@ exports.getPostBySearch = async(req, res) => {
 
 
 exports.createPost = async(req, res) => {
-   
-    const post = req.body;
-    try{
-        const newPost = new PostMessage({...post,creator:req.userId,createdAt:new Date().toISOString()});
-        await newPost.save();
-        res.status(201).json(newPost);
 
+
+   
+   const {title,message,creator,tags} = req.body;
+ 
+   
+
+
+
+
+    try{
+          const myCloud  = await cloudinary.uploader.upload(req.body.selectedFile,{folder:"memories"});
+
+  
+    console.log(myCloud);
+
+
+        const newPost = new PostMessage({title,message, selectedFile:myCloud.secure_url,creator,tags});
+        await newPost.save();
+
+        res.status(201).json(newPost);
+        
     }
     catch(error){
         res.status(409).json({message:error.message});
